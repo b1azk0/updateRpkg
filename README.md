@@ -1,7 +1,8 @@
+
 # updateRpkg
 
 [![R](https://img.shields.io/badge/R%20Version-%3E%3D%203.5.0-blue)](https://www.r-project.org/)
-[![Version](https://img.shields.io/badge/Version-0.2.4-brightgreen)](https://github.com/b1azk0/updateRpkg)
+[![Version](https://img.shields.io/badge/Version-0.2.1-brightgreen)](https://github.com/b1azk0/updateRpkg)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A robust R package designed to streamline the process of updating and rebuilding installed R packages with enhanced error handling and fallback mechanisms.

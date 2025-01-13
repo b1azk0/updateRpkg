@@ -4,10 +4,7 @@
 \alias{updateRpackages}
 \title{Update and Rebuild R Packages}
 \usage{
-updateRpackages(debug_output = FALSE)
-}
-\arguments{
-\item{debug_output}{Logical. If TRUE, uses regular R console output instead of formatted output}
+updateRpackages()
 }
 \description{
 Updates all installed R packages and rebuilds if necessary

@@ -4,18 +4,13 @@
 \alias{rebuildPackages}
 \title{Rebuild Packages}
 \usage{
-rebuildPackages(debug_output = FALSE)
+rebuildPackages()
 
-rebuildPackages(debug_output = FALSE)
-}
-\arguments{
-\item{debug_output}{Logical. If TRUE, uses regular R console output instead of formatted output}
-
-\item{rebuild_all}{Logical. If TRUE, rebuilds all packages. If FALSE, only rebuilds packages built with different R version}
+rebuildPackages()
 }
 \value{
 Named list of rebuild results
 }
 \description{
-Rebuilds packages that were built with a different R version or all packages
+Rebuilds packages that were built with a different R version
 }
