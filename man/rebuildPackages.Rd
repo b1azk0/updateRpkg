@@ -8,9 +8,12 @@ rebuildPackages()
 
 rebuildPackages()
 }
+\arguments{
+\item{rebuild_all}{Logical. If TRUE, rebuilds all packages. If FALSE, only rebuilds packages built with different R version}
+}
 \value{
 Named list of rebuild results
 }
 \description{
-Rebuilds packages that were built with a different R version
+Rebuilds packages that were built with a different R version or all packages
 }
