@@ -1,7 +1,12 @@
+
 modules = ["r-4.2"]
 run = "R -e \"devtools::document(); devtools::load_all(); updateRpackages()\""
+
 [nix]
 channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "R -e \"devtools::document(); devtools::load_all(); updateRpackages()\""]
+
+[languages]
+R = "r"
