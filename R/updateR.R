@@ -16,13 +16,15 @@ updateRpackages <- function(debug_output = FALSE) {
         options(crayon.enabled = FALSE)
         options(updateRpkg.debug = TRUE)
         options(quiet = FALSE)
-        # Ensure we're using default R output methods
-        update.packages_orig <- utils::update.packages
-        assign("update.packages", update.packages_orig, envir = as.environment("package:utils"))
     } else {
         options(crayon.enabled = TRUE)
         options(updateRpkg.debug = FALSE)
         options(quiet = TRUE)
+    }
+
+    # Always ensure we have the CRAN mirror set
+    if (is.null(getOption("repos")) || getOption("repos")["CRAN"] == "@CRAN@") {
+        options(repos = c(CRAN = "https://cloud.r-project.org"))
     }
     # Set CRAN mirror directly
     options(repos = c(CRAN = "https://cloud.r-project.org"))
