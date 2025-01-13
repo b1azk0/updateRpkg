@@ -4,3 +4,11 @@
 export(checkPackageVersion)
 export(rebuildPackages)
 export(updatePackages)
+
+importFrom(utils, available.packages)
+importFrom(utils, install.packages)
+importFrom(utils, installed.packages)
+importFrom(utils, packageVersion)
+importFrom(utils, update.packages)
+importFrom(utils, txtProgressBar)
+importFrom(utils, setTxtProgressBar)
