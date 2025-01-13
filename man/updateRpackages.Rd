@@ -7,5 +7,5 @@
 updateRpackages()
 }
 \description{
-Updates all installed R packages from source, rebuilds outdated ones, and retries using binaries if necessary.
+Updates all installed R packages and rebuilds if necessary
 }
