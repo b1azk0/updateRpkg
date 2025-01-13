@@ -8,5 +8,6 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "R -e \"devtools::document(); devtools::load_all(); updateRpackages()\""]
 
-[languages]
-R = "r"
+[languages.r]
+pattern = "**/*.{r,R}"
+syntax = "r"
