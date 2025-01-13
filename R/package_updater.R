@@ -42,13 +42,16 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
                 }
                 
                 cat(blue(paste0("→ Processing ", bold(pkg), "...\n")))
-                utils::capture.output({
-                    tryCatch({
-                        install.packages(pkg, type = "source", quiet = TRUE)
+                sink(tempfile(), type = "output")
+                sink(tempfile(), type = "message")
+                result <- tryCatch({
+                    install.packages(pkg, type = "source", quiet = TRUE)
                         cat(green(paste0("✓ ", bold(pkg), " ", blue("updated successfully from source"), "\n")))
                         cat(blue("  → Version: ", packageVersion(pkg), "\n"))
                         batch_results[[pkg]] <- "updated from source"
                     }, error = function(e) {
+                        sink(NULL, type = "message")
+                        sink(NULL, type = "output")
                         cat(yellow(paste0("! ", bold(pkg), " source build failed, trying binary\n")))
                         tryCatch({
                             install.packages(pkg, type = "binary", quiet = TRUE)
@@ -60,8 +63,9 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
                             cat(red("  → Error: ", conditionMessage(e), "\n"))
                             batch_results[[pkg]] <- "update failed"
                         })
-                    })
-                }, type = "message")
+                    }) 
+                sink(NULL, type = "message")
+                sink(NULL, type = "output")
             }
             batch_results
         }), recursive = FALSE)
