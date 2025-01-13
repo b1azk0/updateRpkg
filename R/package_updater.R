@@ -36,29 +36,30 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
     } else {
         pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
 
-    for(pkg in 1:length(packages)) {
-        version_info <- checkPackageVersion(packages[pkg])
-        if (!version_info$needs_update) {
-            results[[packages[pkg]]] <- "up to date"
-            setTxtProgressBar(pb, pkg)
-            next
-        }
+        for(pkg in 1:length(packages)) {
+            version_info <- checkPackageVersion(packages[pkg])
+            if (!version_info$needs_update) {
+                results[[packages[pkg]]] <- "up to date"
+                setTxtProgressBar(pb, pkg)
+                next
+            }
 
-        tryCatch({
-            install.packages(packages[pkg], type = "source")
-            results[[packages[pkg]]] <- "updated from source"
-        }, error = function(e) {
-            message(sprintf("Source installation failed for %s, trying binary...", packages[pkg]))
             tryCatch({
-                install.packages(packages[pkg], type = "binary")
-                results[[packages[pkg]]] <- "updated from binary"
+                install.packages(packages[pkg], type = "source")
+                results[[packages[pkg]]] <- "updated from source"
             }, error = function(e) {
-                results[[packages[pkg]]] <- "update failed"
+                message(sprintf("Source installation failed for %s, trying binary...", packages[pkg]))
+                tryCatch({
+                    install.packages(packages[pkg], type = "binary")
+                    results[[packages[pkg]]] <- "updated from binary"
+                }, error = function(e) {
+                    results[[packages[pkg]]] <- "update failed"
+                })
             })
-        })
-        setTxtProgressBar(pb, pkg)
+            setTxtProgressBar(pb, pkg)
+        }
+        close(pb)
     }
-    close(pb)
     return(results)
 }
 
