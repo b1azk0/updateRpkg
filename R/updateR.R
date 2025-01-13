@@ -12,20 +12,67 @@ updateRpackages <- function() {
     message("Checking for packages that need rebuilding...")
     rebuild_results <- rebuildPackages()
 
-    # Summary
-    message("\nUpdate Summary:")
-    for (pkg in names(update_results)) {
-        message(sprintf("%s: %s", pkg, update_results[[pkg]]))
-    }
+    # Generate summary report
+    summary_report <- list(
+        timestamp = Sys.time(),
+        updates = list(
+            total = length(update_results),
+            successful = sum(grepl("updated|up to date", unlist(update_results))),
+            failed = sum(grepl("failed", unlist(update_results)))
+        ),
+        rebuilds = list(
+            total = length(rebuild_results),
+            successful = sum(grepl("rebuilt", unlist(rebuild_results))),
+            failed = sum(grepl("failed", unlist(rebuild_results)))
+        ),
+        details = list(
+            updates = update_results,
+            rebuilds = rebuild_results
+        ),
+        warnings = warnings(),
+        errors = geterrmessage()
+    )
 
-    message("\nRebuild Summary:")
-    if (length(rebuild_results) > 0) {
-        for (pkg in names(rebuild_results)) {
-            message(sprintf("%s: %s", pkg, rebuild_results[[pkg]]))
+    # Print formatted summary
+    cat("\n=== Package Update Summary ===\n")
+    cat(sprintf("Time: %s\n\n", format(summary_report$timestamp)))
+    
+    cat("Updates:\n")
+    cat(sprintf("- Total packages processed: %d\n", summary_report$updates$total))
+    cat(sprintf("- Successfully updated/current: %d\n", summary_report$updates$successful))
+    cat(sprintf("- Failed updates: %d\n\n", summary_report$updates$failed))
+    
+    cat("Rebuilds:\n")
+    cat(sprintf("- Total packages processed: %d\n", summary_report$rebuilds$total))
+    cat(sprintf("- Successfully rebuilt: %d\n", summary_report$rebuilds$successful))
+    cat(sprintf("- Failed rebuilds: %d\n\n", summary_report$rebuilds$failed))
+    
+    if (summary_report$updates$failed > 0 || summary_report$rebuilds$failed > 0) {
+        cat("Failed Operations:\n")
+        failed_updates <- names(which(grepl("failed", unlist(update_results))))
+        failed_rebuilds <- names(which(grepl("failed", unlist(rebuild_results))))
+        
+        if (length(failed_updates) > 0) {
+            cat("- Update failures:", paste(failed_updates, collapse=", "), "\n")
         }
-    } else {
-        message("No packages needed rebuilding")
+        if (length(failed_rebuilds) > 0) {
+            cat("- Rebuild failures:", paste(failed_rebuilds, collapse=", "), "\n")
+        }
     }
+    
+    if (length(summary_report$warnings) > 0 || nchar(summary_report$errors) > 0) {
+        cat("\nWarnings and Errors:\n")
+        if (length(summary_report$warnings) > 0) {
+            cat("Warnings:\n")
+            print(summary_report$warnings)
+        }
+        if (nchar(summary_report$errors) > 0) {
+            cat("Errors:\n")
+            cat(summary_report$errors)
+        }
+    }
+    
+    invisible(summary_report)
 }
 
 
