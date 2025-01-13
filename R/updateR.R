@@ -1,9 +1,13 @@
 #' Update and Rebuild R Packages
 #'
 #' Updates all installed R packages and rebuilds if necessary
+#' @param debug_output Logical. If TRUE, uses regular R console output instead of formatted output
 #' @importFrom utils installed.packages update.packages install.packages packageVersion available.packages
 #' @export
-updateRpackages <- function() {
+updateRpackages <- function(debug_output = FALSE) {
+    if (debug_output) {
+        options(crayon.enabled = FALSE)
+    }
     # Set CRAN mirror directly
     options(repos = c(CRAN = "https://cloud.r-project.org"))
 
@@ -88,8 +92,12 @@ updateRpackages <- function() {
 
 
 #' Helper function to rebuild outdated packages
+#' @param debug_output Logical. If TRUE, uses regular R console output instead of formatted output
 #' @importFrom utils install.packages
-rebuildPackages <- function() {
+rebuildPackages <- function(debug_output = FALSE) {
+    if (debug_output) {
+        options(crayon.enabled = FALSE)
+    }
     if (!requireNamespace("crayon", quietly = TRUE)) {
         install.packages("crayon", quiet = TRUE)
     }
