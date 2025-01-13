@@ -41,20 +41,27 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
                     next
                 }
                 
-                tryCatch({
-                    install.packages(pkg, type = "source", quiet = TRUE)
-                    cat(green(paste0(" ✓ ", bold(pkg), ": Successfully updated from source\n")))
-                    batch_results[[pkg]] <- "updated from source"
-                }, error = function(e) {
+                cat(blue(paste0("→ Processing ", bold(pkg), "...\n")))
+                utils::capture.output({
                     tryCatch({
-                        install.packages(pkg, type = "binary", quiet = TRUE)
-                        cat(yellow(paste0(" ⚠ ", bold(pkg), ": Updated from binary\n")))
-                        batch_results[[pkg]] <- "updated from binary"
+                        install.packages(pkg, type = "source", quiet = TRUE)
+                        cat(green(paste0("✓ ", bold(pkg), " ", blue("updated successfully from source"), "\n")))
+                        cat(blue("  → Version: ", packageVersion(pkg), "\n"))
+                        batch_results[[pkg]] <- "updated from source"
                     }, error = function(e) {
-                        cat(red(paste0(" ✗ ", bold(pkg), ": Update failed\n")))
-                        batch_results[[pkg]] <- "update failed"
+                        cat(yellow(paste0("! ", bold(pkg), " source build failed, trying binary\n")))
+                        tryCatch({
+                            install.packages(pkg, type = "binary", quiet = TRUE)
+                            cat(green(paste0("✓ ", bold(pkg), " ", blue("updated successfully from binary"), "\n")))
+                            cat(blue("  → Version: ", packageVersion(pkg), "\n"))
+                            batch_results[[pkg]] <- "updated from binary"
+                        }, error = function(e) {
+                            cat(red(paste0("✗ ", bold(pkg), " update failed\n")))
+                            cat(red("  → Error: ", conditionMessage(e), "\n"))
+                            batch_results[[pkg]] <- "update failed"
+                        })
                     })
-                })
+                }, type = "message")
             }
             batch_results
         }), recursive = FALSE)
@@ -119,18 +126,27 @@ rebuildPackages <- function(rebuild_all = FALSE) {
 
     for(i in 1:nrow(outdated)) {
         pkg <- rownames(outdated)[i]
-        tryCatch({
-            install.packages(pkg, type = "source")
-            results[[pkg]] <- "rebuilt from source"
-        }, error = function(e) {
-            message(sprintf("Source rebuild failed for %s, trying binary...", pkg))
+        cat(blue(paste0("→ Rebuilding ", bold(pkg), "...\n")))
+        utils::capture.output({
             tryCatch({
-                install.packages(pkg, type = "binary")
-                results[[pkg]] <- "rebuilt from binary"
+                install.packages(pkg, type = "source", quiet = TRUE)
+                cat(green(paste0("✓ ", bold(pkg), " ", blue("rebuilt successfully from source"), "\n")))
+                cat(blue("  → Version: ", packageVersion(pkg), "\n"))
+                results[[pkg]] <- "rebuilt from source"
             }, error = function(e) {
-                results[[pkg]] <- "rebuild failed"
+                cat(yellow(paste0("! ", bold(pkg), " source rebuild failed, trying binary\n")))
+                tryCatch({
+                    install.packages(pkg, type = "binary", quiet = TRUE)
+                    cat(green(paste0("✓ ", bold(pkg), " ", blue("rebuilt successfully from binary"), "\n")))
+                    cat(blue("  → Version: ", packageVersion(pkg), "\n"))
+                    results[[pkg]] <- "rebuilt from binary"
+                }, error = function(e) {
+                    cat(red(paste0("✗ ", bold(pkg), " rebuild failed\n")))
+                    cat(red("  → Error: ", conditionMessage(e), "\n"))
+                    results[[pkg]] <- "rebuild failed"
+                })
             })
-        })
+        }, type = "message")
         setTxtProgressBar(pb, i)
     }
     close(pb)
