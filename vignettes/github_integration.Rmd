@@ -1,0 +1,73 @@
+
+---
+title: "GitHub Integration with updateRpkg"
+author: "Blazej Mrozinski"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GitHub Integration with updateRpkg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installing from GitHub
+
+To install the latest version of `updateRpkg` from GitHub:
+
+```r
+# Install devtools if not already installed
+if (!requireNamespace("devtools", quietly = TRUE)) {
+    install.packages("devtools")
+}
+
+# Install updateRpkg from GitHub
+devtools::install_github("b1azk0/updateRpkg")
+```
+
+## Development Workflow
+
+### Clone the Repository
+
+```r
+# Using devtools
+devtools::create_from_github("b1azk0/updateRpkg")
+```
+
+### Making Changes
+
+1. Create a new branch for your changes
+2. Make your modifications
+3. Run tests and checks:
+
+```r
+devtools::test()
+devtools::check()
+```
+
+### Building Documentation
+
+Update package documentation:
+
+```r
+devtools::document()
+```
+
+### Creating a Release
+
+1. Update DESCRIPTION version number
+2. Update NEWS.md with changes
+3. Build and check package
+4. Create a new GitHub release
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+For more details, see the [GitHub repository](https://github.com/b1azk0/updateRpkg).

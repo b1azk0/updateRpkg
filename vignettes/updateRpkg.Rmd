@@ -1,0 +1,81 @@
+
+---
+title: "Getting Started with updateRpkg"
+author: "Blazej Mrozinski"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with updateRpkg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+`updateRpkg` is a package designed to streamline the process of updating and rebuilding R packages. It provides robust error handling and fallback mechanisms to ensure smooth package maintenance.
+
+## Basic Usage
+
+### Loading the Package
+
+```r
+library(updateRpkg)
+```
+
+### Updating All Packages
+
+To update all installed packages:
+
+```r
+updateRpackages()
+```
+
+This function will:
+1. Check for updates to updateRpkg itself
+2. Update all installed packages
+3. Rebuild packages if necessary
+4. Provide a detailed summary report
+
+### Updating Specific Packages
+
+To update only certain packages:
+
+```r
+updatePackages(c("dplyr", "ggplot2"))
+```
+
+### Rebuilding Packages
+
+To rebuild packages that were compiled with a different R version:
+
+```r
+rebuildPackages()
+```
+
+## Error Handling
+
+The package includes comprehensive error handling:
+
+```r
+# Example with error handling
+tryCatch({
+    updatePackages("nonexistent_package")
+}, error = function(e) {
+    message("Package update failed: ", e$message)
+})
+```
+
+## Version Checking
+
+Check if packages need updates:
+
+```r
+version_info <- checkPackageVersion("dplyr")
+if(version_info$needs_update) {
+    message("Update available!")
+}
+```
