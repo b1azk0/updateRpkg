@@ -1,8 +1,10 @@
+
 #' Update Packages
 #'
 #' Updates packages from source with binary fallback
 #' @param packages Character vector of package names. If NULL, updates all packages
 #' @return Named list of update results
+#' @importFrom utils install.packages packageVersion available.packages installed.packages txtProgressBar
 #' @export
 updatePackages <- function(packages = NULL) {
     if (is.null(packages)) {
@@ -10,31 +12,31 @@ updatePackages <- function(packages = NULL) {
     }
 
     results <- list()
-    pb <- txtProgressBar(min = 0, max = length(packages), style = 3) # Initialize progress bar
+    pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
 
-    for(pkg in packages) {
-        version_info <- checkPackageVersion(pkg)
+    for(pkg in 1:length(packages)) {
+        version_info <- checkPackageVersion(packages[pkg])
         if (!version_info$needs_update) {
-            results[[pkg]] <- "up to date"
-            pb$tick() # Increment progress bar
+            results[[packages[pkg]]] <- "up to date"
+            setTxtProgressBar(pb, pkg)
             next
         }
 
         tryCatch({
-            install.packages(pkg, type = "source")
-            results[[pkg]] <- "updated from source"
+            install.packages(packages[pkg], type = "source")
+            results[[packages[pkg]]] <- "updated from source"
         }, error = function(e) {
-            message(sprintf("Source installation failed for %s, trying binary...", pkg))
+            message(sprintf("Source installation failed for %s, trying binary...", packages[pkg]))
             tryCatch({
-                install.packages(pkg, type = "binary")
-                results[[pkg]] <- "updated from binary"
+                install.packages(packages[pkg], type = "binary")
+                results[[packages[pkg]]] <- "updated from binary"
             }, error = function(e) {
-                results[[pkg]] <- "update failed"
+                results[[packages[pkg]]] <- "update failed"
             })
         })
-        pb$tick() # Increment progress bar
+        setTxtProgressBar(pb, pkg)
     }
-    close(pb) # Close progress bar
+    close(pb)
     return(results)
 }
 
@@ -53,9 +55,10 @@ rebuildPackages <- function() {
     }
 
     results <- list()
-    pb <- txtProgressBar(min = 0, max = nrow(outdated), style = 3) # Initialize progress bar
+    pb <- txtProgressBar(min = 0, max = nrow(outdated), style = 3)
 
-    for(pkg in rownames(outdated)) {
+    for(i in 1:nrow(outdated)) {
+        pkg <- rownames(outdated)[i]
         tryCatch({
             install.packages(pkg, type = "source")
             results[[pkg]] <- "rebuilt from source"
@@ -68,8 +71,8 @@ rebuildPackages <- function() {
                 results[[pkg]] <- "rebuild failed"
             })
         })
-        pb$tick() # Increment progress bar
+        setTxtProgressBar(pb, i)
     }
-    close(pb) # Close progress bar
+    close(pb)
     return(results)
 }
