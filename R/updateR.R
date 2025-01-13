@@ -90,25 +90,46 @@ updateRpackages <- function() {
 #' Helper function to rebuild outdated packages
 #' @importFrom utils install.packages
 rebuildPackages <- function() {
+    if (!requireNamespace("crayon", quietly = TRUE)) {
+        install.packages("crayon", quiet = TRUE)
+    }
+    library(crayon)
+    
     installed_packages <- installed.packages()
     outdated_builds <- installed_packages[installed_packages[, "Built"] != R.version$version.string, "Package"]
 
+    cat(blue$bold("\n🔄 Package Rebuild Process Started\n"))
+    cat(blue("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"))
+
     results <- list()
     if (length(outdated_builds) > 0) {
-        for (pkg in outdated_builds) {
+        pb <- txtProgressBar(min = 0, max = length(outdated_builds), style = 3)
+        
+        for (i in seq_along(outdated_builds)) {
+            pkg <- outdated_builds[i]
+            cat(blue(paste0("→ Rebuilding ", bold(pkg), "...\n")))
+            
             tryCatch({
-                install.packages(pkg, type = "source")
+                install.packages(pkg, type = "source", quiet = TRUE)
+                cat(green(paste0("✓ ", bold(pkg), " ", blue("rebuilt successfully from source"), "\n")))
                 results[[pkg]] <- "Successfully rebuilt from source"
             }, error = function(e) {
-                message(sprintf("Failed to build %s from source. Retrying with binaries...", pkg))
+                cat(yellow(paste0("! ", bold(pkg), " source build failed, trying binary\n")))
                 tryCatch({
-                    install.packages(pkg, type = "binary")
+                    install.packages(pkg, type = "binary", quiet = TRUE)
+                    cat(green(paste0("✓ ", bold(pkg), " ", blue("rebuilt successfully from binary"), "\n")))
                     results[[pkg]] <- "Successfully rebuilt from binary"
                 }, error = function(e) {
+                    cat(red(paste0("✗ ", bold(pkg), " rebuild failed\n")))
+                    cat(red("  → Error: ", conditionMessage(e), "\n"))
                     results[[pkg]] <- paste("Failed to rebuild:", e$message)
                 })
             })
+            setTxtProgressBar(pb, i)
         }
+        close(pb)
+    } else {
+        cat(green("No packages need rebuilding\n"))
     }
     results
 }

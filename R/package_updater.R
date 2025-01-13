@@ -24,7 +24,10 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
     if (parallel && requireNamespace("parallel", quietly = TRUE)) {
         num_cores <- min(parallel::detectCores() - 1, length(packages), 8)  # Cap at 8 cores
         cl <- parallel::makeCluster(num_cores)
-        parallel::clusterExport(cl, "checkPackageVersion")
+        parallel::clusterExport(cl, c("checkPackageVersion"))
+        parallel::clusterEvalQ(cl, {
+            options(repos = c(CRAN = "https://cloud.r-project.org"))
+        })
         on.exit(parallel::stopCluster(cl))
         
         # Split packages into batches for better memory management
