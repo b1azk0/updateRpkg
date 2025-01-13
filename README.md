@@ -8,8 +8,9 @@ SourcePackageUpgrader provides automated tools for:
 - Updating R packages from source installations
 - Identifying and rebuilding packages compiled with different R versions
 - Automatic fallback to binary installations when source builds fail
-- Detailed reporting of successful and failed package updates
+- Detailed post-run summary reports
 - Version compatibility checking
+- Package dependency validation
 
 ## Installation
 ```R
@@ -42,6 +43,8 @@ rebuildPackages()
 - **Progress Tracking**: Reports successful and failed updates
 - **Error Handling**: Robust error management with informative messages
 - **Version Checking**: Pre-update version comparison to avoid unnecessary updates
+- **Detailed Summary Reports**: Comprehensive post-run summaries
+- **Package Backup**: Built-in backup and restore functionality
 
 ## Function Documentation
 
@@ -51,6 +54,7 @@ Main function that handles the complete package update process:
 - Updates from source with binary fallback
 - Rebuilds outdated packages
 - Provides detailed success/failure reporting
+- Generates comprehensive summary report
 
 ### updatePackages(packages = NULL)
 Updates specific packages or all installed packages:
@@ -69,6 +73,16 @@ Rebuilds packages compiled with different R versions:
 Checks if a package needs updating:
 - Compares installed and available versions
 - Returns version information and update status
+
+### backupPackages(file_path)
+Creates a backup of installed packages:
+- Saves package information to CSV
+- Stores version and build information
+
+### restorePackages(file_path)
+Restores packages from backup:
+- Reads backup CSV file
+- Reinstalls packages to match backup
 
 ## Contributing
 Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
