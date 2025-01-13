@@ -6,10 +6,18 @@
 #' @return Named list of update results
 #' @importFrom utils install.packages packageVersion available.packages installed.packages txtProgressBar setTxtProgressBar update.packages
 #' @export
+#' @importFrom crayon green red yellow blue bold
 updatePackages <- function(packages = NULL, parallel = TRUE) {
+    if (!requireNamespace("crayon", quietly = TRUE)) {
+        install.packages("crayon", quiet = TRUE)
+    }
+    
     if (is.null(packages)) {
         packages <- rownames(installed.packages())
     }
+    
+    cat(blue$bold("\n📦 Package Update Process Started\n"))
+    cat(blue("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"))
 
     results <- list()
     if (parallel && requireNamespace("parallel", quietly = TRUE)) {
@@ -34,12 +42,14 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
                 
                 tryCatch({
                     install.packages(pkg, type = "source", quiet = TRUE)
+                    cat(green(sprintf(" ✓ %s: Successfully updated from source\n", pkg)))
                     batch_results[[pkg]] <- "updated from source"
                 }, error = function(e) {
                     tryCatch({
                         install.packages(pkg, type = "binary", quiet = TRUE)
                         batch_results[[pkg]] <- "updated from binary"
                     }, error = function(e) {
+                        cat(red(sprintf(" ✗ %s: Update failed\n", pkg)))
                         batch_results[[pkg]] <- "update failed"
                     })
                 })
@@ -83,12 +93,19 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
 #' @return Named list of rebuild results
 #' @export
 rebuildPackages <- function(rebuild_all = FALSE) {
+    if (!requireNamespace("crayon", quietly = TRUE)) {
+        install.packages("crayon", quiet = TRUE)
+    }
+    
     installed <- installed.packages()
     if (rebuild_all) {
         outdated <- installed
     } else {
         outdated <- installed[installed[, "Built"] != R.version$version.string, ]
     }
+    
+    cat(blue$bold("\n🔄 Package Rebuild Process Started\n"))
+    cat(blue("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"))
 
     if (nrow(outdated) == 0) {
         message("No packages need rebuilding")
