@@ -6,12 +6,12 @@
 updateRpackages <- function() {
     # Set CRAN mirror directly
     options(repos = c(CRAN = "https://cloud.r-project.org"))
-    
+
     # Ensure parallel backend is properly initialized
     if (requireNamespace("parallel", quietly = TRUE)) {
         options(mc.cores = parallel::detectCores() - 1)
     }
-    
+
     # Check for updates to the updater itself
     updater_status <- checkUpdaterVersion()
     if (!is.na(updater_status$remote_version) && updater_status$needs_update) {
@@ -81,7 +81,7 @@ updateRpackages <- function() {
         cat("\nErrors:\n")
         cat(summary_report$errors)
     }
-    
+
 
     invisible(summary_report)
 }
@@ -94,7 +94,7 @@ rebuildPackages <- function() {
         install.packages("crayon", quiet = TRUE)
     }
     library(crayon)
-    
+
     installed_packages <- installed.packages()
     outdated_builds <- installed_packages[installed_packages[, "Built"] != R.version$version.string, "Package"]
 
@@ -104,11 +104,11 @@ rebuildPackages <- function() {
     results <- list()
     if (length(outdated_builds) > 0) {
         pb <- txtProgressBar(min = 0, max = length(outdated_builds), style = 3)
-        
+
         for (i in seq_along(outdated_builds)) {
             pkg <- outdated_builds[i]
             cat(blue(paste0("→ Rebuilding ", bold(pkg), "...\n")))
-            
+
             tryCatch({
                 install.packages(pkg, type = "source", quiet = TRUE)
                 cat(green(paste0("✓ ", bold(pkg), " ", blue("rebuilt successfully from source"), "\n")))
