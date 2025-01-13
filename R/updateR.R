@@ -4,8 +4,13 @@
 #' @importFrom utils installed.packages update.packages install.packages packageVersion available.packages
 #' @export
 updateRpackages <- function() {
-    chooseCRANmirror(ind = 1)
-    options(repos = getOption("repos"))
+    # Set CRAN mirror directly
+    options(repos = c(CRAN = "https://cloud.r-project.org"))
+    
+    # Ensure parallel backend is properly initialized
+    if (requireNamespace("parallel", quietly = TRUE)) {
+        options(mc.cores = parallel::detectCores() - 1)
+    }
     
     # Check for updates to the updater itself
     updater_status <- checkUpdaterVersion()
