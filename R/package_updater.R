@@ -6,13 +6,35 @@
 #' @return Named list of update results
 #' @importFrom utils install.packages packageVersion available.packages installed.packages txtProgressBar setTxtProgressBar update.packages
 #' @export
-updatePackages <- function(packages = NULL) {
+updatePackages <- function(packages = NULL, parallel = TRUE) {
     if (is.null(packages)) {
         packages <- rownames(installed.packages())
     }
 
     results <- list()
-    pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
+    if (parallel && requireNamespace("parallel", quietly = TRUE)) {
+        num_cores <- parallel::detectCores() - 1
+        cl <- parallel::makeCluster(num_cores)
+        on.exit(parallel::stopCluster(cl))
+        
+        pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
+        results <- parallel::parLapply(cl, packages, function(pkg) {
+            tryCatch({
+                install.packages(pkg, type = "source")
+                return("updated from source")
+            }, error = function(e) {
+                message(sprintf("Source installation failed for %s, trying binary...", pkg))
+                tryCatch({
+                    install.packages(pkg, type = "binary")
+                    return("updated from binary")
+                }, error = function(e) {
+                    return("update failed")
+                })
+            })
+        })
+        names(results) <- packages
+    } else {
+        pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
 
     for(pkg in 1:length(packages)) {
         version_info <- checkPackageVersion(packages[pkg])
