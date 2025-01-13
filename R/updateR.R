@@ -5,6 +5,13 @@
 #' @export
 updateRpackages <- function() {
     options(repos = c(CRAN = "https://cloud.r-project.org"))
+    
+    # Check for updates to the updater itself
+    updater_status <- checkUpdaterVersion()
+    if (!is.na(updater_status$remote_version) && updater_status$needs_update) {
+        message(sprintf("\nNewer version of SourcePackageUpgrader available: %s (current: %s)\n", 
+                       updater_status$remote_version, updater_status$local_version))
+    }
 
     message("Updating packages...")
     update_results <- updatePackages()
