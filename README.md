@@ -14,7 +14,7 @@ SourcePackageUpgrader provides automated tools for:
 ## Installation
 ```R
 # Install from GitHub
-devtools::install_github("replit/SourcePackageUpgrader")
+devtools::install_github("b1azk0/SourcePackageUpgrader")
 
 # Install directly in R
 devtools::install()
