@@ -13,26 +13,39 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
 
     results <- list()
     if (parallel && requireNamespace("parallel", quietly = TRUE)) {
-        num_cores <- parallel::detectCores() - 1
+        num_cores <- min(parallel::detectCores() - 1, length(packages), 8)  # Cap at 8 cores
         cl <- parallel::makeCluster(num_cores)
+        parallel::clusterExport(cl, "checkPackageVersion")
         on.exit(parallel::stopCluster(cl))
         
+        # Split packages into batches for better memory management
+        batch_size <- ceiling(length(packages) / num_cores)
+        pkg_batches <- split(packages, ceiling(seq_along(packages) / batch_size))
+        
         pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
-        results <- parallel::parLapply(cl, packages, function(pkg) {
-            tryCatch({
-                install.packages(pkg, type = "source")
-                return("updated from source")
-            }, error = function(e) {
-                message(sprintf("Source installation failed for %s, trying binary...", pkg))
+        results <- unlist(parallel::parLapply(cl, pkg_batches, function(pkg_batch) {
+            batch_results <- list()
+            for (pkg in pkg_batch) {
+                version_info <- checkPackageVersion(pkg)
+                if (!version_info$needs_update) {
+                    batch_results[[pkg]] <- "up to date"
+                    next
+                }
+                
                 tryCatch({
-                    install.packages(pkg, type = "binary")
-                    return("updated from binary")
+                    install.packages(pkg, type = "source", quiet = TRUE)
+                    batch_results[[pkg]] <- "updated from source"
                 }, error = function(e) {
-                    return("update failed")
+                    tryCatch({
+                        install.packages(pkg, type = "binary", quiet = TRUE)
+                        batch_results[[pkg]] <- "updated from binary"
+                    }, error = function(e) {
+                        batch_results[[pkg]] <- "update failed"
+                    })
                 })
-            })
-        })
-        names(results) <- packages
+            }
+            batch_results
+        }), recursive = FALSE)
     } else {
         pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
 
