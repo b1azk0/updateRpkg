@@ -17,7 +17,7 @@ checkPackageVersion <- function(pkg_name) {
         available = available_version,
         needs_update = installed_version < available_version
     )
-
+}
 
 #' Check Package Update Version
 #'
