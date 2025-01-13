@@ -4,7 +4,7 @@
 #' Updates packages from source with binary fallback
 #' @param packages Character vector of package names. If NULL, updates all packages
 #' @return Named list of update results
-#' @importFrom utils install.packages packageVersion available.packages installed.packages txtProgressBar
+#' @importFrom utils install.packages packageVersion available.packages installed.packages txtProgressBar setTxtProgressBar update.packages
 #' @export
 updatePackages <- function(packages = NULL) {
     if (is.null(packages)) {

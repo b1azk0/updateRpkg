@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(person("Blazej", "Mrozinski", email = "blazej@mrozinski.com.pl", role = c("aut", "cre")))
 Description: Provides a function to update all installed R packages from source, rebuild outdated ones, and retry using binaries if necessary.
 Depends: R (>= 3.5.0)
-License: MIT + file LICENSE
+License: MIT + file LICENSE + file LICENSE
 LazyData: true
 RoxygenNote: 7.3.2
 Encoding: UTF-8

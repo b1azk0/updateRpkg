@@ -4,6 +4,7 @@
 #' Compares installed and available versions of a package
 #' @param pkg_name Character string of package name
 #' @return List with installed and available versions
+#' @importFrom utils available.packages packageVersion
 #' @export
 checkPackageVersion <- function(pkg_name) {
     available <- available.packages()
