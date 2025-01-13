@@ -68,9 +68,10 @@ Updates specific packages or all installed packages:
 - Falls back to binary if source fails
 - Returns detailed status for each package
 
-### rebuildPackages()
-Rebuilds packages compiled with different R versions:
-- Identifies outdated builds
+### rebuildPackages(rebuild_all = FALSE)
+Rebuilds R packages with flexible options:
+- `rebuild_all = FALSE`: Rebuilds only packages compiled with different R versions
+- `rebuild_all = TRUE`: Rebuilds all installed packages
 - Rebuilds from source with binary fallback
 - Returns rebuild status for each package
 

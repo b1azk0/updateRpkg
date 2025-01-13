@@ -78,12 +78,17 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
 
 #' Rebuild Packages
 #'
-#' Rebuilds packages that were built with a different R version
+#' Rebuilds packages that were built with a different R version or all packages
+#' @param rebuild_all Logical. If TRUE, rebuilds all packages. If FALSE, only rebuilds packages built with different R version
 #' @return Named list of rebuild results
 #' @export
-rebuildPackages <- function() {
+rebuildPackages <- function(rebuild_all = FALSE) {
     installed <- installed.packages()
-    outdated <- installed[installed[, "Built"] != R.version$version.string, ]
+    if (rebuild_all) {
+        outdated <- installed
+    } else {
+        outdated <- installed[installed[, "Built"] != R.version$version.string, ]
+    }
 
     if (nrow(outdated) == 0) {
         message("No packages need rebuilding")
