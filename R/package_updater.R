@@ -1,4 +1,3 @@
-
 #' Update Packages
 #'
 #' Updates packages from source with binary fallback
@@ -9,16 +8,18 @@ updatePackages <- function(packages = NULL) {
     if (is.null(packages)) {
         packages <- rownames(installed.packages())
     }
-    
+
     results <- list()
-    
+    pb <- txtProgressBar(min = 0, max = length(packages), style = 3) # Initialize progress bar
+
     for(pkg in packages) {
         version_info <- checkPackageVersion(pkg)
         if (!version_info$needs_update) {
             results[[pkg]] <- "up to date"
+            pb$tick() # Increment progress bar
             next
         }
-        
+
         tryCatch({
             install.packages(pkg, type = "source")
             results[[pkg]] <- "updated from source"
@@ -31,7 +32,9 @@ updatePackages <- function(packages = NULL) {
                 results[[pkg]] <- "update failed"
             })
         })
+        pb$tick() # Increment progress bar
     }
+    close(pb) # Close progress bar
     return(results)
 }
 
@@ -43,13 +46,15 @@ updatePackages <- function(packages = NULL) {
 rebuildPackages <- function() {
     installed <- installed.packages()
     outdated <- installed[installed[, "Built"] != R.version$version.string, ]
-    
+
     if (nrow(outdated) == 0) {
         message("No packages need rebuilding")
         return(list())
     }
-    
+
     results <- list()
+    pb <- txtProgressBar(min = 0, max = nrow(outdated), style = 3) # Initialize progress bar
+
     for(pkg in rownames(outdated)) {
         tryCatch({
             install.packages(pkg, type = "source")
@@ -63,6 +68,8 @@ rebuildPackages <- function() {
                 results[[pkg]] <- "rebuild failed"
             })
         })
+        pb$tick() # Increment progress bar
     }
+    close(pb) # Close progress bar
     return(results)
 }
