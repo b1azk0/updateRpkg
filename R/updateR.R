@@ -31,8 +31,11 @@ updateRpackages <- function() {
 
 #' Helper function to update packages
 #' @importFrom utils installed.packages update.packages
-updatePackages <- function() {
-  installed_packages <- installed.packages()
+updatePackages <- function(packages = NULL) {
+  if (is.null(packages)) {
+    installed_packages <- installed.packages()
+    packages <- installed_packages[, "Package"]
+  }
   update_results <- update.packages(ask = FALSE, checkBuilt = TRUE, type = "source", oldPkgs = installed_packages[, "Package"])
   
   results <- list()
