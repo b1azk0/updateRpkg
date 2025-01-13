@@ -5,8 +5,15 @@
 #' @importFrom utils installed.packages update.packages install.packages packageVersion available.packages
 #' @export
 updateRpackages <- function(debug_output = FALSE) {
+    old_crayon <- getOption("crayon.enabled", TRUE)
+    on.exit(options(crayon.enabled = old_crayon))
+    
     if (debug_output) {
         options(crayon.enabled = FALSE)
+        options(updateRpkg.debug = TRUE)
+    } else {
+        options(crayon.enabled = TRUE)
+        options(updateRpkg.debug = FALSE)
     }
     # Set CRAN mirror directly
     options(repos = c(CRAN = "https://cloud.r-project.org"))
@@ -140,4 +147,7 @@ rebuildPackages <- function(debug_output = FALSE) {
         cat(green("No packages need rebuilding\n"))
     }
     results
+}
+.onLoad <- function(libname, pkgname) {
+    packageStartupMessage("updateRpkg version ", utils::packageVersion("updateRpkg"))
 }
