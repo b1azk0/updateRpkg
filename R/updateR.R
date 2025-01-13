@@ -6,14 +6,23 @@
 #' @export
 updateRpackages <- function(debug_output = FALSE) {
     old_crayon <- getOption("crayon.enabled", TRUE)
-    on.exit(options(crayon.enabled = old_crayon))
+    old_quiet <- getOption("quiet", FALSE)
+    on.exit({
+        options(crayon.enabled = old_crayon)
+        options(quiet = old_quiet)
+    })
     
     if (debug_output) {
         options(crayon.enabled = FALSE)
         options(updateRpkg.debug = TRUE)
+        options(quiet = FALSE)
+        # Ensure we're using default R output methods
+        update.packages_orig <- utils::update.packages
+        assign("update.packages", update.packages_orig, envir = as.environment("package:utils"))
     } else {
         options(crayon.enabled = TRUE)
         options(updateRpkg.debug = FALSE)
+        options(quiet = TRUE)
     }
     # Set CRAN mirror directly
     options(repos = c(CRAN = "https://cloud.r-project.org"))
