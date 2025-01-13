@@ -31,7 +31,7 @@ checkUpdaterVersion <- function() {
         download.file("https://raw.githubusercontent.com/b1azk0/SourcePackageUpgrader/main/DESCRIPTION", temp_file, quiet = TRUE)
         desc_lines <- readLines(temp_file)
         remote_version <- gsub("Version:\\s*", "", grep("^Version:", desc_lines, value = TRUE)[1])
-        local_version <- as.character(utils::packageVersion("SourcePackageUpgrader"))
+        local_version <- as.character(utils::packageVersion("updateRpkg"))
         
         list(
             local_version = local_version,
@@ -40,7 +40,7 @@ checkUpdaterVersion <- function() {
         )
     }, error = function(e) {
         list(
-            local_version = as.character(utils::packageVersion("SourcePackageUpgrader")),
+            local_version = as.character(utils::packageVersion("updateRpkg")),
             remote_version = NA,
             needs_update = FALSE
         )

@@ -1,5 +1,5 @@
 
-# SourcePackageUpgrader
+# updateRpkg
 
 A robust R package designed to streamline the process of updating and rebuilding installed R packages with enhanced error handling and fallback mechanisms.
 
@@ -16,7 +16,7 @@ SourcePackageUpgrader provides automated tools for:
 ## Installation
 ```R
 # Install from GitHub
-devtools::install_github("b1azk0/SourcePackageUpgrader")
+devtools::install_github("b1azk0/updateRpkg")
 
 # Install directly in R
 devtools::install()
