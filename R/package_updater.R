@@ -11,12 +11,13 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
     if (!requireNamespace("crayon", quietly = TRUE)) {
         install.packages("crayon", quiet = TRUE)
     }
+    library(crayon)
     
     if (is.null(packages)) {
         packages <- rownames(installed.packages())
     }
     
-    cat(blue$bold("\n📦 Package Update Process Started\n"))
+    cat(bold(blue("\n📦 Package Update Process Started\n")))
     cat(blue("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"))
 
     results <- list()
@@ -42,14 +43,15 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
                 
                 tryCatch({
                     install.packages(pkg, type = "source", quiet = TRUE)
-                    cat(green(sprintf(" ✓ %s: Successfully updated from source\n", pkg)))
+                    cat(green(paste0(" ✓ ", bold(pkg), ": Successfully updated from source\n")))
                     batch_results[[pkg]] <- "updated from source"
                 }, error = function(e) {
                     tryCatch({
                         install.packages(pkg, type = "binary", quiet = TRUE)
+                        cat(yellow(paste0(" ⚠ ", bold(pkg), ": Updated from binary\n")))
                         batch_results[[pkg]] <- "updated from binary"
                     }, error = function(e) {
-                        cat(red(sprintf(" ✗ %s: Update failed\n", pkg)))
+                        cat(red(paste0(" ✗ ", bold(pkg), ": Update failed\n")))
                         batch_results[[pkg]] <- "update failed"
                     })
                 })
