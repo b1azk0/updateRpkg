@@ -4,7 +4,7 @@
 A robust R package designed to streamline the process of updating and rebuilding installed R packages with enhanced error handling and fallback mechanisms.
 
 ## Overview
-SourcePackageUpgrader provides automated tools for:
+updateRpkg provides automated tools for:
 - Updating R packages from source installations
 - Identifying and rebuilding packages compiled with different R versions
 - Automatic fallback to binary installations when source builds fail
@@ -25,7 +25,7 @@ devtools::install()
 ## Usage
 ```R
 # Load the package
-library(SourcePackageUpgrader)
+library(updateRpkg)
 
 # Update all installed packages
 updateRpackages()
@@ -45,9 +45,8 @@ rebuildPackages()
 - **Error Handling**: Robust error management with informative messages
 - **Version Checking**: Pre-update version comparison to avoid unnecessary updates
 - **Detailed Summary Reports**: Comprehensive post-run summaries
-- **Package Backup**: Built-in backup and restore functionality
-- **Self-Update Check**: Automatically checks for newer versions of the updater
 - **Parallel Processing**: Optimized parallel installation support
+- **Self-Update Check**: Automatically checks for newer versions of the updater
 
 ## Function Documentation
 
@@ -57,11 +56,9 @@ Main function that handles the complete package update process:
 - Updates installed packages
 - Rebuilds outdated packages
 - Provides detailed success/failure reporting
-- Generates comprehensive summary report
 
-### updatePackages(packages = NULL, parallel = TRUE)
+### updatePackages(packages = NULL)
 Updates specific packages or all installed packages:
-- Supports parallel processing for faster updates
 - Checks current versions before updating
 - Attempts source installation first
 - Falls back to binary if source fails
@@ -73,8 +70,8 @@ Rebuilds packages compiled with different R versions:
 - Rebuilds from source with binary fallback
 - Returns rebuild status for each package
 
-### checkPackageVersion(pkg_name)
-Checks if a package needs updating:
+### checkUpdaterVersion()
+Checks if a newer version of updateRpkg is available:
 - Compares installed and available versions
 - Returns version information and update status
 
