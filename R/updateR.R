@@ -43,22 +43,22 @@ updateRpackages <- function() {
     # Print formatted summary
     cat("\n=== Package Update Summary ===\n")
     cat(sprintf("Time: %s\n\n", format(summary_report$timestamp)))
-    
+
     cat("Updates:\n")
     cat(sprintf("- Total packages processed: %d\n", summary_report$updates$total))
     cat(sprintf("- Successfully updated/current: %d\n", summary_report$updates$successful))
     cat(sprintf("- Failed updates: %d\n\n", summary_report$updates$failed))
-    
+
     cat("Rebuilds:\n")
     cat(sprintf("- Total packages processed: %d\n", summary_report$rebuilds$total))
     cat(sprintf("- Successfully rebuilt: %d\n", summary_report$rebuilds$successful))
     cat(sprintf("- Failed rebuilds: %d\n\n", summary_report$rebuilds$failed))
-    
+
     if (summary_report$updates$failed > 0 || summary_report$rebuilds$failed > 0) {
         cat("Failed Operations:\n")
         failed_updates <- names(which(grepl("failed", unlist(update_results))))
         failed_rebuilds <- names(which(grepl("failed", unlist(rebuild_results))))
-        
+
         if (length(failed_updates) > 0) {
             cat("- Update failures:", paste(failed_updates, collapse=", "), "\n")
         }
@@ -66,44 +66,18 @@ updateRpackages <- function() {
             cat("- Rebuild failures:", paste(failed_rebuilds, collapse=", "), "\n")
         }
     }
-    
-    if (length(summary_report$warnings) > 0 || nchar(summary_report$errors) > 0) {
-        cat("\nWarnings and Errors:\n")
-        if (length(summary_report$warnings) > 0) {
-            cat("Warnings:\n")
-            print(summary_report$warnings)
-        }
-        if (nchar(summary_report$errors) > 0) {
-            cat("Errors:\n")
-            cat(summary_report$errors)
-        }
+
+    if (length(summary_report$warnings) > 0 ) {
+        cat("\nWarnings:\n")
+        print(summary_report$warnings)
+    }
+    if (nchar(summary_report$errors) > 0) {
+        cat("\nErrors:\n")
+        cat(summary_report$errors)
     }
     
+
     invisible(summary_report)
-}
-
-
-#' Helper function to update packages
-#' @importFrom utils installed.packages update.packages
-updatePackages <- function(packages = NULL) {
-  if (is.null(packages)) {
-    installed_packages <- installed.packages()
-    packages <- installed_packages[, "Package"]
-  }
-  update_results <- update.packages(ask = FALSE, checkBuilt = TRUE, type = "source", oldPkgs = installed_packages[, "Package"])
-  
-  results <- list()
-  for(i in 1:length(update_results)){
-    pkg <- names(update_results)[i]
-    if(is.na(update_results[[i]])){
-      results[[pkg]] <- "Already up to date"
-    } else if (update_results[[i]] == "OK"){
-      results[[pkg]] <- "Successfully updated"
-    } else {
-      results[[pkg]] <- paste("Update failed:", update_results[[i]])
-    }
-  }
-  results
 }
 
 
@@ -112,7 +86,7 @@ updatePackages <- function(packages = NULL) {
 rebuildPackages <- function() {
     installed_packages <- installed.packages()
     outdated_builds <- installed_packages[installed_packages[, "Built"] != R.version$version.string, "Package"]
-    
+
     results <- list()
     if (length(outdated_builds) > 0) {
         for (pkg in outdated_builds) {
