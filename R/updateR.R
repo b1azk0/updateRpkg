@@ -4,7 +4,8 @@
 #' @importFrom utils installed.packages update.packages install.packages packageVersion available.packages
 #' @export
 updateRpackages <- function() {
-    options(repos = c(CRAN = "https://cloud.r-project.org"))
+    chooseCRANmirror(ind = 1)
+    options(repos = getOption("repos"))
     
     # Check for updates to the updater itself
     updater_status <- checkUpdaterVersion()
