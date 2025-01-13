@@ -48,5 +48,3 @@ checkUpdaterVersion <- function() {
         if (file.exists(temp_file)) unlink(temp_file)
     })
 }
-
-}
