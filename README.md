@@ -2,9 +2,15 @@
 # updateRpkg
 
 [![R](https://img.shields.io/badge/R%20Version-%3E%3D%203.5.0-blue)](https://www.r-project.org/)
-[![Version](https://img.shields.io/badge/Version-0.2.3-brightgreen)](https://github.com/b1azk0/updateRpkg)
+[![Version](https://img.shields.io/badge/Version-0.2.4-brightgreen)](https://github.com/b1azk0/updateRpkg)
 
 ## Changelog
+
+### v0.2.4
+- Improved version tracking for package rebuilds
+- Enhanced R version compatibility checking
+- Optimized rebuild process to avoid unnecessary updates
+- Fixed version tracking issues
 
 ### v0.2.3
 - Added proper error handling and fallback mechanisms
