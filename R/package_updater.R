@@ -9,7 +9,21 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
     if (is.null(packages)) {
         packages <- rownames(installed.packages())
     }
-
+    
+    # Get built versions for all packages
+    built_versions <- sapply(packages, function(pkg) {
+        tryCatch(packageDescription(pkg)$Built, error = function(e) NA)
+    })
+    
+    # Only update packages built with different R version
+    needs_rebuild <- names(built_versions)[built_versions != R.version$version.string]
+    packages <- intersect(packages, needs_rebuild)
+    
+    if (length(packages) == 0) {
+        message("No packages need rebuilding - all packages match current R version")
+        return(list())
+    }
+    
     # Track already rebuilt packages
     rebuilt_pkgs <- new.env(hash = TRUE)
 
