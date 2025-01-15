@@ -11,23 +11,12 @@ checkPackageVersion <- function(pkg_name) {
     installed_version <- packageVersion(pkg_name)
     available_version <- available[pkg_name, "Version"]
     
-    result <- list(
+    list(
         package = pkg_name,
         installed = as.character(installed_version),
         available = available_version,
         needs_update = installed_version < available_version
     )
-    
-    # Print formatted output
-    cat("\n📦 Package Version Check\n")
-    cat("━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-    cat(sprintf("Package:   %s\n", pkg_name))
-    cat(sprintf("Installed: %s\n", result$installed))
-    cat(sprintf("Available: %s\n", result$available))
-    cat(sprintf("Status:    %s\n\n", 
-        if(result$needs_update) "⚠️  Update available" else "✅ Up to date"))
-    
-    invisible(result)
 }
 
 #' Check Package Update Version
