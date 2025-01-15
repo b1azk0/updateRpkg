@@ -3,8 +3,18 @@
 #' Updates all installed R packages and rebuilds if necessary
 #' @importFrom utils installed.packages update.packages install.packages packageVersion available.packages
 #' @export
-updateRpackages <- function() {
+updateRpackages <- function(enable_logging = TRUE) {
     options(repos = c(CRAN = "https://cloud.r-project.org"))
+    
+    log_file <- if(enable_logging) file("updateR.log", "a") else NULL
+    on.exit(if(!is.null(log_file)) close(log_file))
+    
+    log_message <- function(level, msg) {
+        timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+        full_msg <- sprintf("[%s] %s: %s\n", timestamp, level, msg)
+        message(full_msg)
+        if(!is.null(log_file)) cat(full_msg, file = log_file)
+    }
     
     # Check for updates to the updater itself
     updater_status <- checkUpdaterVersion()
