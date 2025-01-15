@@ -23,11 +23,17 @@ updateRpackages <- function(enable_logging = TRUE) {
                        updater_status$remote_version, updater_status$local_version))
     }
 
-    message("Updating packages...")
+    cat("\n🔄 Package Update Process\n")
+    cat("━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+    
+    cat("📦 Checking packages...\n")
     update_results <- updatePackages()
-
-    message("Checking for packages that need rebuilding...")
+    
+    cat("\n🔨 Checking rebuild requirements...\n")
     rebuild_results <- rebuildPackages()
+    
+    cat("\n📊 Process Summary\n")
+    cat("━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
     # Generate summary report
     summary_report <- list(
