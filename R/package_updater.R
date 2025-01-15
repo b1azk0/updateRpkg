@@ -1,4 +1,3 @@
-
 #' Update Packages
 #'
 #' Updates packages from source with binary fallback
@@ -11,65 +10,88 @@ updatePackages <- function(packages = NULL, parallel = TRUE) {
         packages <- rownames(installed.packages())
     }
 
+    # Track already rebuilt packages
+    rebuilt_pkgs <- new.env(hash = TRUE)
+
     results <- list()
     if (parallel && requireNamespace("parallel", quietly = TRUE)) {
-        num_cores <- min(parallel::detectCores() - 1, length(packages), 8)  # Cap at 8 cores
+        num_cores <- min(parallel::detectCores() - 1, length(packages), 8)
         cl <- parallel::makeCluster(num_cores)
-        parallel::clusterExport(cl, "checkPackageVersion")
+        parallel::clusterExport(cl, c("checkPackageVersion", "rebuilt_pkgs"))
         on.exit(parallel::stopCluster(cl))
-        
-        # Split packages into batches for better memory management
+
         batch_size <- ceiling(length(packages) / num_cores)
         pkg_batches <- split(packages, ceiling(seq_along(packages) / batch_size))
-        
+
         pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
         results <- unlist(parallel::parLapply(cl, pkg_batches, function(pkg_batch) {
             batch_results <- list()
             for (pkg in pkg_batch) {
+                # Skip if already rebuilt with current R version
+                if (!is.null(rebuilt_pkgs[[pkg]])) {
+                    batch_results[[pkg]] <- "already rebuilt"
+                    next
+                }
+
                 version_info <- checkPackageVersion(pkg)
                 if (!version_info$needs_update) {
                     batch_results[[pkg]] <- "up to date"
                     next
                 }
-                
+
                 tryCatch({
                     install.packages(pkg, type = "source", quiet = TRUE)
+                    rebuilt_pkgs[[pkg]] <- TRUE
                     batch_results[[pkg]] <- "updated from source"
                 }, error = function(e) {
+                    message(sprintf("Source installation failed for %s, trying binary...", pkg))
                     tryCatch({
                         install.packages(pkg, type = "binary", quiet = TRUE)
+                        rebuilt_pkgs[[pkg]] <- TRUE
                         batch_results[[pkg]] <- "updated from binary"
                     }, error = function(e) {
-                        batch_results[[pkg]] <- "update failed"
+                        batch_results[[pkg]] <- sprintf("update failed: %s", conditionMessage(e))
                     })
                 })
             }
             batch_results
         }), recursive = FALSE)
+        close(pb)
     } else {
         pb <- txtProgressBar(min = 0, max = length(packages), style = 3)
 
-        for(pkg in 1:length(packages)) {
-            version_info <- checkPackageVersion(packages[pkg])
+        for(pkg_idx in 1:length(packages)) {
+            pkg <- packages[pkg_idx]
+
+            # Skip if already rebuilt with current R version
+            if (!is.null(rebuilt_pkgs[[pkg]])) {
+                results[[pkg]] <- "already rebuilt"
+                setTxtProgressBar(pb, pkg_idx)
+                next
+            }
+
+            version_info <- checkPackageVersion(pkg)
             if (!version_info$needs_update) {
-                results[[packages[pkg]]] <- "up to date"
-                setTxtProgressBar(pb, pkg)
+                results[[pkg]] <- "up to date"
+                setTxtProgressBar(pb, pkg_idx)
                 next
             }
 
             tryCatch({
-                install.packages(packages[pkg], type = "source")
-                results[[packages[pkg]]] <- "updated from source"
+                install.packages(pkg, type = "source", quiet = TRUE)
+                rebuilt_pkgs[[pkg]] <- TRUE
+                results[[pkg]] <- "updated from source"
             }, error = function(e) {
-                message(sprintf("Source installation failed for %s, trying binary...", packages[pkg]))
+                message(sprintf("Source installation failed for %s, trying binary...", pkg))
                 tryCatch({
-                    install.packages(packages[pkg], type = "binary")
-                    results[[packages[pkg]]] <- "updated from binary"
+                    install.packages(pkg, type = "binary", quiet = TRUE)
+                    rebuilt_pkgs[[pkg]] <- TRUE
+                    results[[pkg]] <- "updated from binary"
                 }, error = function(e) {
-                    results[[packages[pkg]]] <- "update failed"
+                    results[[pkg]] <- sprintf("update failed: %s", conditionMessage(e))
                 })
             })
-            setTxtProgressBar(pb, pkg)
+            setTxtProgressBar(pb, pkg_idx)
         }
         close(pb)
     }

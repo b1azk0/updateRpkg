@@ -2,7 +2,7 @@
 # updateRpkg
 
 [![R](https://img.shields.io/badge/R%20Version-%3E%3D%203.5.0-blue)](https://www.r-project.org/)
-[![Version](https://img.shields.io/badge/Version-0.2.1-brightgreen)](https://github.com/b1azk0/updateRpkg)
+[![Version](https://img.shields.io/badge/Version-0.2.2-brightgreen)](https://github.com/b1azk0/updateRpkg)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A robust R package designed to streamline the process of updating and rebuilding installed R packages with enhanced error handling and fallback mechanisms.
@@ -46,7 +46,9 @@ rebuildPackages()
 - **Automatic Fallback**: Switches to binary installations if source builds fail
 - **Version Compatibility**: Detects packages built with different R versions
 - **Progress Tracking**: Reports successful and failed updates
-- **Error Handling**: Robust error management with informative messages
+- **Error Handling**: Robust error management with detailed error messages and automatic fallback
+- **Smart Rebuilding**: Tracks already rebuilt packages to avoid unnecessary rebuilds
+- **Version Tracking**: Intelligent version comparison and build status tracking
 - **Version Checking**: Pre-update version comparison to avoid unnecessary updates
 - **Detailed Summary Reports**: Comprehensive post-run summaries
 - **Parallel Processing**: Optimized parallel installation support
